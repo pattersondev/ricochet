@@ -7,7 +7,7 @@ class SchedulerService {
   constructor() {
     this.jobs = new Map();
     this.pollingJobs = new Map();
-    this.POLLING_INTERVAL = 10000; // 10 seconds
+    this.POLLING_INTERVAL = 60000; // 1 minute
   }
 
   async initializeScheduledJobs() {
