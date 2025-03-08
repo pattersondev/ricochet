@@ -397,6 +397,35 @@ class SpotifyService {
       throw error;
     }
   }
+
+  async searchTrack(query) {
+    try {
+      await this.ensureValidToken();
+      
+      const data = await spotifyApi.searchTracks(query, { limit: 5 });
+      
+      if (!data.body || !data.body.tracks || !data.body.tracks.items) {
+        return { success: false, error: 'No search results found' };
+      }
+      
+      return {
+        success: true,
+        tracks: data.body.tracks.items.map(track => ({
+          id: track.id,
+          name: track.name,
+          artists: track.artists,
+          album: {
+            name: track.album.name,
+            release_date: track.album.release_date
+          },
+          external_urls: track.external_urls
+        }))
+      };
+    } catch (error) {
+      console.error('Error searching for track:', error);
+      return { success: false, error: error.message };
+    }
+  }
 }
 
 module.exports = new SpotifyService(); 

@@ -1,9 +1,11 @@
 const sqlite3 = require('sqlite3').verbose();
 require('dotenv').config();
+const appleMusicService = require('./appleMusicService');
 
 class IMessageService {
   constructor() {
     this.dbPath = process.env.IMESSAGE_DB_PATH;
+    this.debug = false; // Add debug flag
   }
 
   async getConversations() {
@@ -58,16 +60,17 @@ class IMessageService {
           AND (
             m.text LIKE '%open.spotify.com%'
             OR m.text LIKE '%spotify:track:%'
+            OR m.text LIKE '%music.apple.com%'
           )
         ORDER BY 
           m.date DESC
       `;
 
-      db.all(query, [conversationId], (err, rows) => {
+      db.all(query, [conversationId], async (err, rows) => {
         db.close();
-        if (err) return reject(`Error fetching Spotify links: ${err.message}`);
+        if (err) return reject(`Error fetching music links: ${err.message}`);
         
-        const links = this.extractSpotifyLinks(rows);
+        const links = await this.extractMusicLinks(rows);
         resolve(links);
       });
     });
@@ -101,39 +104,42 @@ class IMessageService {
           AND (
             m.text LIKE '%open.spotify.com%'
             OR m.text LIKE '%spotify:track:%'
+            OR m.text LIKE '%music.apple.com%'
           )
         ORDER BY 
           m.date DESC
       `;
 
-      db.all(query, [conversationId, timestamp], (err, rows) => {
+      db.all(query, [conversationId, timestamp], async (err, rows) => {
         db.close();
-        if (err) return reject(`Error fetching Spotify links: ${err.message}`);
+        if (err) return reject(`Error fetching music links: ${err.message}`);
         
-        const links = this.extractSpotifyLinks(rows);
+        const links = await this.extractMusicLinks(rows);
         resolve(links);
       });
     });
   }
 
-  extractSpotifyLinks(messages) {
-    const spotifyLinks = [];
+  async extractMusicLinks(messages) {
+    const musicLinks = [];
     const trackIds = new Set();
     
     const spotifyUrlRegex = /https:\/\/open\.spotify\.com\/track\/([a-zA-Z0-9]+)/g;
     const spotifyUriRegex = /spotify:track:([a-zA-Z0-9]+)/g;
+    const appleMusicRegex = /https:\/\/music\.apple\.com\/(?:[a-z]{2}\/)?(?:album|playlist)\/[^/]+\/(?:\d+)\??(?:i=(\d+))?/g;
     
-    messages.forEach(message => {
-      if (!message.text) return;
+    for (const message of messages) {
+      if (!message.text) continue;
       
       let match;
-      // Extract URL format
+      
+      // Extract Spotify URL format
       while ((match = spotifyUrlRegex.exec(message.text)) !== null) {
         const trackId = match[1];
         if (!trackIds.has(trackId)) {
           trackIds.add(trackId);
-          spotifyLinks.push({
-            type: 'url',
+          musicLinks.push({
+            type: 'spotify',
             trackId,
             fullLink: match[0],
             messageId: message.id,
@@ -143,13 +149,13 @@ class IMessageService {
         }
       }
       
-      // Extract URI format
+      // Extract Spotify URI format
       while ((match = spotifyUriRegex.exec(message.text)) !== null) {
         const trackId = match[1];
         if (!trackIds.has(trackId)) {
           trackIds.add(trackId);
-          spotifyLinks.push({
-            type: 'uri',
+          musicLinks.push({
+            type: 'spotify',
             trackId,
             fullLink: match[0],
             messageId: message.id,
@@ -158,9 +164,62 @@ class IMessageService {
           });
         }
       }
-    });
+      
+      // Extract Apple Music links
+      while ((match = appleMusicRegex.exec(message.text)) !== null) {
+        const fullLink = match[0];
+        try {
+          const result = await appleMusicService.findSpotifyEquivalent(fullLink);
+          if (result.success && result.trackId && !trackIds.has(result.trackId)) {
+            trackIds.add(result.trackId);
+            musicLinks.push({
+              type: 'apple_music',
+              trackId: result.trackId,
+              fullLink: fullLink,
+              messageId: message.id,
+              sender: message.sender_name,
+              date: message.date,
+              originalSource: 'apple_music'
+            });
+          } else {
+            // Still add the link to show it was found but conversion failed
+            const linkInfo = {
+              type: 'apple_music',
+              trackId: null,
+              fullLink: fullLink,
+              messageId: message.id,
+              sender: message.sender_name,
+              date: message.date,
+              originalSource: 'apple_music',
+              conversionError: result.error
+            };
+            
+            if (this.debug && result.details) {
+              linkInfo.conversionDetails = result.details;
+            }
+            
+            musicLinks.push(linkInfo);
+          }
+        } catch (error) {
+          if (this.debug) {
+            console.error(`Error converting Apple Music link: ${fullLink}`, error);
+          }
+          // Add the failed link
+          musicLinks.push({
+            type: 'apple_music',
+            trackId: null,
+            fullLink: fullLink,
+            messageId: message.id,
+            sender: message.sender_name,
+            date: message.date,
+            originalSource: 'apple_music',
+            conversionError: error.message
+          });
+        }
+      }
+    }
     
-    return spotifyLinks;
+    return musicLinks;
   }
 }
 
