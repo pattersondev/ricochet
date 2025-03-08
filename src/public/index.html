@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iMessage Spotify Playlist Creator</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --spotify-green: #1DB954;
+      --spotify-green-hover: #1aa34a;
+      --spotify-black: #191414;
+      --spotify-white: #FFFFFF;
+      --spotify-light-gray: #f8f9fa;
+      --spotify-dark-gray: #2d2d2d;
+      --spotify-medium-gray: #535353;
+      --imessage-blue: #0b93f6;
+      --imessage-gray: #e5e5ea;
+      --primary-gradient: linear-gradient(135deg, #1DB954 0%, #1aa34a 100%);
+      --dark-gradient: linear-gradient(135deg, #191414 0%, #2d2d2d 100%);
+    }
+    
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--spotify-black);
+      color: var(--spotify-white);
+      padding: 0;
+      margin: 0;
+      min-height: 100vh;
+      letter-spacing: 0.3px;
+    }
+    
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .hero-section {
+      background: var(--dark-gradient);
+      padding: 3rem 0;
+      margin-bottom: 2.5rem;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .hero-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.2);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(29, 185, 84, 0.1) 25px, transparent 26px),
+        radial-gradient(circle at 85% 30%, rgba(29, 185, 84, 0.1) 25px, transparent 26px),
+        radial-gradient(circle at 50% 80%, rgba(29, 185, 84, 0.1) 25px, transparent 26px);
+      background-size: 250px 250px;
+      opacity: 0.4;
+      z-index: 0;
+    }
+    
+    .hero-icons {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+      opacity: 0.07;
+    }
+    
+    .hero-icon {
+      position: absolute;
+      font-size: 3rem;
+      color: var(--spotify-white);
+    }
+    
+    .hero-icon:nth-child(1) {
+      top: 20%;
+      right: 15%;
+      transform: rotate(-15deg);
+    }
+    
+    .hero-icon:nth-child(2) {
+      top: 60%;
+      right: 25%;
+      transform: rotate(10deg);
+    }
+    
+    .hero-icon:nth-child(3) {
+      top: 30%;
+      right: 35%;
+      transform: rotate(5deg);
+    }
+    
+    .hero-icon:nth-child(4) {
+      top: 50%;
+      right: 10%;
+      transform: rotate(-5deg);
+    }
+    
+    .hero-section h1 {
+      font-weight: 700;
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hero-section p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+      max-width: 600px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .spotify-icon {
+      color: var(--spotify-green);
+      margin-right: 0.5rem;
+    }
+    
+    .card {
+      background-color: var(--spotify-dark-gray);
+      border: none;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 20px rgba(0,0,0,0.2);
+    }
+    
+    .card-header {
+      background: var(--primary-gradient);
+      color: var(--spotify-white);
+      font-weight: 600;
+      border-bottom: none;
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-header h2 {
+      font-size: 1.25rem;
+      margin: 0;
+    }
+    
+    .card-body {
+      padding: 1.5rem;
+    }
+    
+    .btn {
+      border-radius: 50px;
+      padding: 0.6rem 1.5rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+    
+    .btn-spotify {
+      background: var(--primary-gradient);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(29, 185, 84, 0.3);
+    }
+    
+    .btn-spotify:hover {
+      background: var(--spotify-green-hover);
+      color: white;
+      box-shadow: 0 6px 15px rgba(29, 185, 84, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+      background-color: var(--imessage-blue);
+      border: none;
+      box-shadow: 0 4px 12px rgba(11, 147, 246, 0.3);
+    }
+    
+    .btn-primary:hover {
+      background-color: #0a84e1;
+      box-shadow: 0 6px 15px rgba(11, 147, 246, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn i {
+      margin-right: 8px;
+    }
+    
+    .list-group {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .list-group-item {
+      background-color: var(--spotify-medium-gray);
+      color: var(--spotify-white);
+      border: none;
+      padding: 1rem;
+      transition: background-color 0.2s ease;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    
+    .list-group-item-action:hover {
+      background-color: #424242;
+      color: var(--spotify-white);
+    }
+    
+    .list-group-item-action.active {
+      background-color: var(--spotify-green);
+      border-color: var(--spotify-green);
+    }
+    
+    .track-list, .conversation-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border-radius: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: var(--spotify-green) var(--spotify-dark-gray);
+    }
+    
+    .track-list::-webkit-scrollbar, .conversation-list::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .track-list::-webkit-scrollbar-track, .conversation-list::-webkit-scrollbar-track {
+      background: var(--spotify-dark-gray);
+      border-radius: 10px;
+    }
+    
+    .track-list::-webkit-scrollbar-thumb, .conversation-list::-webkit-scrollbar-thumb {
+      background: var(--spotify-green);
+      border-radius: 10px;
+    }
+    
+    .form-control {
+      background-color: var(--spotify-medium-gray);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--spotify-white);
+      border-radius: 50px;
+      padding: 0.75rem 1.25rem;
+      transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+      background-color: rgba(255,255,255,0.1);
+      border-color: var(--spotify-green);
+      color: var(--spotify-white);
+      box-shadow: 0 0 0 0.25rem rgba(29, 185, 84, 0.25);
+    }
+    
+    .form-label {
+      color: var(--spotify-white);
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .alert {
+      border-radius: 8px;
+      border: none;
+      padding: 1rem;
+    }
+    
+    .alert-success {
+      background-color: rgba(29, 185, 84, 0.2);
+      color: var(--spotify-white);
+      border-left: 4px solid var(--spotify-green);
+    }
+    
+    .alert-info {
+      background-color: rgba(11, 147, 246, 0.2);
+      color: var(--spotify-white);
+      border-left: 4px solid var(--imessage-blue);
+    }
+    
+    .alert-warning {
+      background-color: rgba(255, 193, 7, 0.2);
+      color: var(--spotify-white);
+      border-left: 4px solid #ffc107;
+    }
+    
+    .alert-danger {
+      background-color: rgba(220, 53, 69, 0.2);
+      color: var(--spotify-white);
+      border-left: 4px solid #dc3545;
+    }
+    
+    /* Track item styling */
+    .track-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem;
+      border-radius: 8px;
+      background-color: rgba(255,255,255,0.05);
+      margin-bottom: 0.5rem;
+      transition: all 0.2s ease;
+    }
+    
+    .track-item:hover {
+      background-color: rgba(255,255,255,0.1);
+    }
+    
+    .track-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--spotify-green);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    
+    .track-details {
+      flex-grow: 1;
+    }
+    
+    .track-sender {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-bottom: 0.25rem;
+    }
+    
+    .track-link {
+      color: var(--spotify-white);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    
+    .track-link:hover {
+      color: var(--spotify-green);
+    }
+    
+    .spinner-border {
+      width: 1.5rem;
+      height: 1.5rem;
+      border-width: 0.2em;
+    }
+    
+    /* Badges */
+    .badge {
+      padding: 0.5em 0.8em;
+      border-radius: 50px;
+      font-weight: 500;
+      font-size: 0.75rem;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(29, 185, 84, 0.7);
+      }
+      
+      70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(29, 185, 84, 0);
+      }
+      
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(29, 185, 84, 0);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .hero-section h1 {
+        font-size: 2rem;
+      }
+      
+      .hero-section p {
+        font-size: 1rem;
+      }
+      
+      .card-header h2 {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <div class="hero-section text-center fade-in">
+      <div class="hero-icons">
+        <i class="fab fa-spotify hero-icon"></i>
+        <i class="fas fa-music hero-icon"></i>
+        <i class="fas fa-headphones hero-icon"></i>
+        <i class="far fa-comment-dots hero-icon"></i>
+      </div>
+      <h1><i class="fab fa-spotify spotify-icon"></i>iMessage Spotify Playlist Creator</h1>
+      <p class="text-center mx-auto">Create custom Spotify playlists from song links shared in your iMessage conversations</p>
+    </div>
+    
+    <div id="auth-section" class="card fade-in" style="animation-delay: 0.1s;">
+      <div class="card-header">
+        <i class="fas fa-key me-2"></i>
+        <h2 class="h5 mb-0">Spotify Authorization</h2>
+      </div>
+      <div class="card-body">
+        <p>To create playlists, you need to authorize this app with your Spotify account.</p>
+        <button id="authorize-btn" class="btn btn-spotify pulse">
+          <i class="fab fa-spotify"></i> Connect to Spotify
+        </button>
+        <div id="auth-status" class="mt-3"></div>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-5">
+        <div class="card fade-in" style="animation-delay: 0.2s;">
+          <div class="card-header">
+            <i class="far fa-comment-dots me-2"></i>
+            <h2 class="h5 mb-0">iMessage Conversations</h2>
+          </div>
+          <div class="card-body">
+            <button id="load-conversations-btn" class="btn btn-primary mb-3">
+              <i class="fas fa-sync-alt"></i> Load Conversations
+            </button>
+            <div id="conversations-list" class="conversation-list mt-3"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-7">
+        <div class="card fade-in" style="animation-delay: 0.3s;">
+          <div class="card-header">
+            <i class="fas fa-music me-2"></i>
+            <h2 class="h5 mb-0">Spotify Links</h2>
+          </div>
+          <div class="card-body">
+            <div id="no-conversation-selected" class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i> Select a conversation to view Spotify links
+            </div>
+            <div id="spotify-links-section" style="display: none;">
+              <h3 id="selected-conversation" class="h6 mb-3"></h3>
+              <div id="links-count" class="alert alert-success mb-3"></div>
+              <div id="links-list" class="track-list mb-4"></div>
+              
+              <div class="mb-3">
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="playlist-action" id="create-new" value="create" checked>
+                  <label class="form-check-label" for="create-new">
+                    Create New Playlist
+                  </label>
+                </div>
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="radio" name="playlist-action" id="update-existing" value="update">
+                  <label class="form-check-label" for="update-existing">
+                    Update Existing Playlist
+                  </label>
+                </div>
+              </div>
+
+              <div id="create-playlist-section">
+                <div class="mb-3">
+                  <label for="playlist-name" class="form-label">Playlist Name</label>
+                  <input type="text" class="form-control" id="playlist-name">
+                </div>
+                <div class="mb-3">
+                  <label for="playlist-description" class="form-label">Playlist Description</label>
+                  <textarea class="form-control" id="playlist-description" rows="2" placeholder="Describe your playlist..."></textarea>
+                </div>
+                <button id="create-playlist-btn" class="btn btn-spotify">
+                  <i class="fas fa-plus-circle"></i> Create Playlist
+                </button>
+              </div>
+
+              <div id="update-playlist-section" style="display: none;">
+                <div class="mb-3">
+                  <label for="existing-playlists" class="form-label">Select Playlist to Update</label>
+                  <select class="form-select" id="existing-playlists">
+                    <option value="">Loading playlists...</option>
+                  </select>
+                </div>
+                <button id="update-playlist-btn" class="btn btn-spotify" disabled>
+                  <i class="fas fa-sync-alt"></i> Update Playlist
+                </button>
+
+                <div class="mt-4">
+                  <h5>Playlist Sync Options</h5>
+                  <div class="mb-3">
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="sync-mode" id="schedule-mode" value="schedule">
+                      <label class="form-check-label" for="schedule-mode">
+                        Schedule Daily Updates
+                      </label>
+                    </div>
+                    <div class="form-check mb-2">
+                      <input class="form-check-input" type="radio" name="sync-mode" id="realtime-mode" value="realtime">
+                      <label class="form-check-label" for="realtime-mode">
+                        Real-time Mirroring
+                      </label>
+                    </div>
+                  </div>
+
+                  <div id="schedule-controls" style="display: none;">
+                    <div class="mb-3">
+                      <label for="schedule-time" class="form-label">Update Time (24-hour format)</label>
+                      <input type="time" class="form-control" id="schedule-time">
+                    </div>
+                    <button id="schedule-update-btn" class="btn btn-spotify" disabled>
+                      <i class="fas fa-clock"></i> Schedule Daily Update
+                    </button>
+                    <button id="delete-schedule-btn" class="btn btn-danger ms-2" style="display: none;">
+                      <i class="fas fa-trash-alt"></i> Delete Schedule
+                    </button>
+                    <div id="schedule-status" class="mt-2"></div>
+                  </div>
+
+                  <div id="realtime-controls" style="display: none;">
+                    <p class="text-muted mb-3">
+                      Real-time mirroring will automatically update the playlist whenever new Spotify links are shared in the conversation.
+                    </p>
+                    <button id="start-realtime-btn" class="btn btn-spotify" disabled>
+                      <i class="fas fa-play"></i> Start Real-time Mirroring
+                    </button>
+                    <button id="stop-realtime-btn" class="btn btn-danger ms-2" style="display: none;">
+                      <i class="fas fa-stop"></i> Stop Mirroring
+                    </button>
+                    <div id="realtime-status" class="mt-2"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="create-result" class="mt-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Global variables
+    let spotifyLinks = [];
+    let selectedConversationId = null;
+    let isAuthorized = false;
+    let userPlaylists = [];
+    
+    // DOM elements
+    const authorizeBtn = document.getElementById('authorize-btn');
+    const authStatus = document.getElementById('auth-status');
+    const loadConversationsBtn = document.getElementById('load-conversations-btn');
+    const conversationsList = document.getElementById('conversations-list');
+    const noConversationSelected = document.getElementById('no-conversation-selected');
+    const spotifyLinksSection = document.getElementById('spotify-links-section');
+    const selectedConversationEl = document.getElementById('selected-conversation');
+    const linksCount = document.getElementById('links-count');
+    const linksList = document.getElementById('links-list');
+    const playlistName = document.getElementById('playlist-name');
+    const playlistDescription = document.getElementById('playlist-description');
+    const createPlaylistBtn = document.getElementById('create-playlist-btn');
+    const createResult = document.getElementById('create-result');
+    const createNewRadio = document.getElementById('create-new');
+    const updateExistingRadio = document.getElementById('update-existing');
+    const createPlaylistSection = document.getElementById('create-playlist-section');
+    const updatePlaylistSection = document.getElementById('update-playlist-section');
+    const existingPlaylistsSelect = document.getElementById('existing-playlists');
+    const updatePlaylistBtn = document.getElementById('update-playlist-btn');
+    const scheduleTimeInput = document.getElementById('schedule-time');
+    const scheduleUpdateBtn = document.getElementById('schedule-update-btn');
+    const deleteScheduleBtn = document.getElementById('delete-schedule-btn');
+    const scheduleStatus = document.getElementById('schedule-status');
+    const scheduleModeRadio = document.getElementById('schedule-mode');
+    const realtimeModeRadio = document.getElementById('realtime-mode');
+    const scheduleControls = document.getElementById('schedule-controls');
+    const realtimeControls = document.getElementById('realtime-controls');
+    const startRealtimeBtn = document.getElementById('start-realtime-btn');
+    const stopRealtimeBtn = document.getElementById('stop-realtime-btn');
+    const realtimeStatus = document.getElementById('realtime-status');
+    
+    // Check if user is already authorized
+    checkAuthStatus();
+    
+    // Event listeners
+    authorizeBtn.addEventListener('click', authorizeSpotify);
+    loadConversationsBtn.addEventListener('click', loadConversations);
+    createPlaylistBtn.addEventListener('click', createPlaylist);
+    createNewRadio.addEventListener('change', togglePlaylistMode);
+    updateExistingRadio.addEventListener('change', togglePlaylistMode);
+    updatePlaylistBtn.addEventListener('click', updatePlaylist);
+    scheduleUpdateBtn.addEventListener('click', scheduleUpdate);
+    deleteScheduleBtn.addEventListener('click', deleteSchedule);
+    scheduleModeRadio.addEventListener('change', toggleSyncMode);
+    realtimeModeRadio.addEventListener('change', toggleSyncMode);
+    startRealtimeBtn.addEventListener('click', startRealTimeSync);
+    stopRealtimeBtn.addEventListener('click', stopRealTimeSync);
+    existingPlaylistsSelect.addEventListener('change', handlePlaylistSelection);
+    
+    // Functions
+    async function checkAuthStatus() {
+      try {
+        const response = await fetch('/api/spotify/auth-status');
+        const data = await response.json();
+        
+        if (data.success && data.isAuthorized) {
+          isAuthorized = true;
+          authStatus.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i>Connected to Spotify</div>';
+          authorizeBtn.innerHTML = '<i class="fab fa-spotify"></i> Reconnect to Spotify';
+          authorizeBtn.classList.remove('pulse');
+        }
+      } catch (error) {
+        console.error('Error checking auth status:', error);
+      }
+    }
+    
+    async function authorizeSpotify() {
+      try {
+        const response = await fetch('/api/spotify/auth-url');
+        const data = await response.json();
+        
+        if (data.success && data.authUrl) {
+          window.location.href = data.authUrl;
+        } else {
+          authStatus.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to get authorization URL</div>';
+        }
+      } catch (error) {
+        console.error('Error getting auth URL:', error);
+        authStatus.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}</div>`;
+      }
+    }
+    
+    async function loadConversations() {
+      try {
+        loadConversationsBtn.disabled = true;
+        loadConversationsBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...';
+        
+        const response = await fetch('/api/conversations');
+        const data = await response.json();
+        
+        loadConversationsBtn.disabled = false;
+        loadConversationsBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Refresh Conversations';
+        
+        if (data.success && data.conversations) {
+          renderConversations(data.conversations);
+        } else {
+          conversationsList.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load conversations</div>';
+        }
+      } catch (error) {
+        console.error('Error loading conversations:', error);
+        conversationsList.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}</div>`;
+        loadConversationsBtn.disabled = false;
+        loadConversationsBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Load Conversations';
+      }
+    }
+    
+    function renderConversations(conversations) {
+      if (conversations.length === 0) {
+        conversationsList.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>No conversations found</div>';
+        return;
+      }
+      
+      conversationsList.innerHTML = '';
+      
+      conversations.forEach((conversation, index) => {
+        const item = document.createElement('a');
+        item.href = '#';
+        item.className = 'list-group-item list-group-item-action fade-in';
+        item.style.animationDelay = `${0.05 * index}s`;
+        item.dataset.id = conversation.id;
+        
+        const name = conversation.display_name || conversation.chat_identifier || `Conversation ${conversation.id}`;
+        
+        // Create a more structured conversation item
+        item.innerHTML = `
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0 me-3">
+              <i class="far fa-comment-alt fa-lg"></i>
+            </div>
+            <div class="flex-grow-1">
+              ${name}
+            </div>
+            <div class="ms-auto">
+              <i class="fas fa-chevron-right"></i>
+            </div>
+          </div>
+        `;
+        
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          
+          // Update UI for selected conversation
+          document.querySelectorAll('#conversations-list .list-group-item').forEach(el => {
+            el.classList.remove('active');
+          });
+          item.classList.add('active');
+          
+          // Load Spotify links for this conversation
+          selectedConversationId = conversation.id;
+          selectedConversationEl.innerHTML = `<i class="far fa-comment-alt me-2"></i>Selected: ${name}`;
+          loadSpotifyLinks(conversation.id);
+        });
+        
+        conversationsList.appendChild(item);
+      });
+    }
+    
+    async function loadSpotifyLinks(conversationId) {
+      try {
+        noConversationSelected.style.display = 'none';
+        spotifyLinksSection.style.display = 'block';
+        linksList.innerHTML = '<div class="text-center p-4"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+        
+        const response = await fetch(`/api/conversation/${conversationId}/spotify-links`);
+        const data = await response.json();
+        
+        if (data.success) {
+          spotifyLinks = data.links;
+          renderSpotifyLinks(data.links);
+        } else {
+          linksList.innerHTML = '<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Failed to load Spotify links</div>';
+        }
+      } catch (error) {
+        console.error('Error loading Spotify links:', error);
+        linksList.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}</div>`;
+      }
+    }
+    
+    function renderSpotifyLinks(links) {
+      spotifyLinksSection.style.display = 'block';
+      
+      if (links.length === 0) {
+        linksCount.innerHTML = '<i class="fas fa-info-circle me-2"></i>No Spotify links found in this conversation';
+        linksList.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>No Spotify links found</div>';
+        return;
+      }
+      
+      linksCount.innerHTML = `<i class="fas fa-music me-2"></i>Found ${links.length} Spotify track${links.length === 1 ? '' : 's'}`;
+      linksList.innerHTML = '';
+      
+      // Set default playlist name
+      const today = new Date();
+      playlistName.value = `iMessage Playlist - ${today.toLocaleDateString()}`;
+      
+      links.forEach((link, index) => {
+        const item = document.createElement('div');
+        item.className = 'track-item fade-in';
+        item.style.animationDelay = `${0.05 * index}s`;
+        
+        item.innerHTML = `
+          <div class="track-icon">
+            <i class="fas fa-music"></i>
+          </div>
+          <div class="track-details">
+            <div class="track-sender">
+              <i class="far fa-user me-1"></i>${link.sender}
+            </div>
+            <a href="${link.fullLink}" target="_blank" class="track-link">
+              <i class="fab fa-spotify me-1"></i>Track ID: ${link.trackId}
+            </a>
+          </div>
+        `;
+        
+        linksList.appendChild(item);
+      });
+    }
+    
+    async function createPlaylist() {
+      if (!isAuthorized) {
+        createResult.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Please authorize with Spotify first</div>';
+        return;
+      }
+      
+      if (spotifyLinks.length === 0) {
+        createResult.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>No Spotify links to add to playlist</div>';
+        return;
+      }
+      
+      const name = playlistName.value.trim();
+      if (!name) {
+        createResult.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Please enter a playlist name</div>';
+        return;
+      }
+      
+      try {
+        createPlaylistBtn.disabled = true;
+        createPlaylistBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Creating...';
+        createResult.innerHTML = '';
+        
+        // Extract all track IDs
+        const trackIds = spotifyLinks.map(link => link.trackId);
+        
+        // Get the description (or use default if empty)
+        const description = document.getElementById('playlist-description').value.trim() || 'Created from iMessage Spotify links';
+        
+        const response = await fetch('/api/create-playlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            playlistName: name,
+            playlistDescription: description,
+            trackIds: trackIds
+          })
+        });
+        
+        const data = await response.json();
+        
+        createPlaylistBtn.disabled = false;
+        createPlaylistBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Playlist';
+        
+        if (data.success) {
+          createResult.innerHTML = `
+            <div class="alert alert-success">
+              <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-check-circle me-2 fa-lg"></i>
+                <h5 class="mb-0">Playlist created successfully!</h5>
+              </div>
+              <p class="mb-3">Added ${data.trackCount} track${data.trackCount === 1 ? '' : 's'} to "${name}"</p>
+              <a href="${data.playlistUrl}" target="_blank" class="btn btn-spotify btn-sm">
+                <i class="fab fa-spotify"></i> Open in Spotify
+              </a>
+            </div>
+          `;
+        } else {
+          createResult.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ${data.error}</div>`;
+        }
+      } catch (error) {
+        console.error('Error creating playlist:', error);
+        createResult.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}</div>`;
+        createPlaylistBtn.disabled = false;
+        createPlaylistBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Create Playlist';
+      }
+    }
+
+    function togglePlaylistMode() {
+      if (createNewRadio.checked) {
+        createPlaylistSection.style.display = 'block';
+        updatePlaylistSection.style.display = 'none';
+      } else {
+        createPlaylistSection.style.display = 'none';
+        updatePlaylistSection.style.display = 'block';
+        loadUserPlaylists();
+      }
+    }
+
+    async function loadUserPlaylists() {
+      try {
+        existingPlaylistsSelect.innerHTML = '<option value="">Loading playlists...</option>';
+        updatePlaylistBtn.disabled = true;
+        
+        const response = await fetch('/api/spotify/playlists');
+        const data = await response.json();
+        
+        if (data.success) {
+          userPlaylists = data.playlists;
+          renderPlaylistOptions();
+        } else {
+          existingPlaylistsSelect.innerHTML = '<option value="">Failed to load playlists</option>';
+        }
+      } catch (error) {
+        console.error('Error loading playlists:', error);
+        existingPlaylistsSelect.innerHTML = '<option value="">Error loading playlists</option>';
+      }
+    }
+
+    function renderPlaylistOptions() {
+      if (userPlaylists.length === 0) {
+        existingPlaylistsSelect.innerHTML = '<option value="">No playlists found</option>';
+        return;
+      }
+      
+      existingPlaylistsSelect.innerHTML = '<option value="">Select a playlist...</option>';
+      userPlaylists.forEach(playlist => {
+        const option = document.createElement('option');
+        option.value = playlist.id;
+        option.textContent = `${playlist.name} (${playlist.trackCount} tracks)`;
+        existingPlaylistsSelect.appendChild(option);
+      });
+    }
+
+    function handlePlaylistSelection() {
+      const playlistId = existingPlaylistsSelect.value;
+      updatePlaylistBtn.disabled = !playlistId;
+      startRealtimeBtn.disabled = !playlistId;
+      
+      if (playlistId && selectedConversationId) {
+        checkExistingSchedule(playlistId, selectedConversationId);
+        checkRealtimeStatus(playlistId, selectedConversationId);
+      } else {
+        deleteScheduleBtn.style.display = 'none';
+        scheduleStatus.innerHTML = '';
+        stopRealtimeBtn.style.display = 'none';
+        realtimeStatus.innerHTML = '';
+      }
+    }
+
+    async function checkExistingSchedule(playlistId, conversationId) {
+      try {
+        const response = await fetch(`/api/schedule/${playlistId}/${conversationId}`);
+        const data = await response.json();
+        
+        if (data.success && data.schedule) {
+          scheduleTimeInput.value = data.schedule.schedule_time;
+          deleteScheduleBtn.style.display = 'inline-block';
+          scheduleStatus.innerHTML = `<div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            Updates scheduled for ${data.schedule.schedule_time}
+            ${data.schedule.last_run_at ? `<br>Last update: ${new Date(data.schedule.last_run_at).toLocaleString()}` : ''}
+          </div>`;
+        } else {
+          deleteScheduleBtn.style.display = 'none';
+          scheduleStatus.innerHTML = '';
+        }
+      } catch (error) {
+        console.error('Error checking schedule:', error);
+        scheduleStatus.innerHTML = `<div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Error checking schedule: ${error.message}
+        </div>`;
+      }
+    }
+
+    async function scheduleUpdate() {
+      const playlistId = existingPlaylistsSelect.value;
+      const scheduleTime = scheduleTimeInput.value;
+      
+      if (!playlistId || !selectedConversationId || !scheduleTime) {
+        scheduleStatus.innerHTML = `<div class="alert alert-warning">
+          <i class="fas fa-exclamation-circle me-2"></i>
+          Please select a playlist and set a time
+        </div>`;
+        return;
+      }
+      
+      try {
+        scheduleUpdateBtn.disabled = true;
+        scheduleUpdateBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Scheduling...';
+        
+        const response = await fetch(`/api/schedule/${playlistId}/${selectedConversationId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            scheduleTime: scheduleTime
+          })
+        });
+        
+        const data = await response.json();
+        
+        scheduleUpdateBtn.disabled = false;
+        scheduleUpdateBtn.innerHTML = '<i class="fas fa-clock"></i> Schedule Daily Update';
+        
+        if (data.success) {
+          scheduleStatus.innerHTML = `<div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            ${data.message}
+          </div>`;
+          deleteScheduleBtn.style.display = 'inline-block';
+        } else {
+          scheduleStatus.innerHTML = `<div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Error: ${data.error}
+          </div>`;
+        }
+      } catch (error) {
+        console.error('Error scheduling update:', error);
+        scheduleStatus.innerHTML = `<div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Error: ${error.message}
+        </div>`;
+        scheduleUpdateBtn.disabled = false;
+        scheduleUpdateBtn.innerHTML = '<i class="fas fa-clock"></i> Schedule Daily Update';
+      }
+    }
+
+    async function deleteSchedule() {
+      const playlistId = existingPlaylistsSelect.value;
+      
+      if (!playlistId || !selectedConversationId) {
+        return;
+      }
+      
+      try {
+        deleteScheduleBtn.disabled = true;
+        deleteScheduleBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Deleting...';
+        
+        const response = await fetch(`/api/schedule/${playlistId}/${selectedConversationId}`, {
+          method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        deleteScheduleBtn.disabled = false;
+        deleteScheduleBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete Schedule';
+        
+        if (data.success) {
+          scheduleStatus.innerHTML = `<div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            Schedule deleted successfully
+          </div>`;
+          deleteScheduleBtn.style.display = 'none';
+          scheduleTimeInput.value = '';
+        } else {
+          scheduleStatus.innerHTML = `<div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Error: ${data.error}
+          </div>`;
+        }
+      } catch (error) {
+        console.error('Error deleting schedule:', error);
+        scheduleStatus.innerHTML = `<div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Error: ${error.message}
+        </div>`;
+        deleteScheduleBtn.disabled = false;
+        deleteScheduleBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete Schedule';
+      }
+    }
+
+    async function updatePlaylist() {
+      if (!isAuthorized) {
+        createResult.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Please authorize with Spotify first</div>';
+        return;
+      }
+      
+      if (spotifyLinks.length === 0) {
+        createResult.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>No Spotify links to add to playlist</div>';
+        return;
+      }
+      
+      const playlistId = existingPlaylistsSelect.value;
+      if (!playlistId) {
+        createResult.innerHTML = '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i>Please select a playlist</div>';
+        return;
+      }
+      
+      try {
+        updatePlaylistBtn.disabled = true;
+        updatePlaylistBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...';
+        createResult.innerHTML = '';
+        
+        // Extract all track IDs
+        const trackIds = spotifyLinks.map(link => link.trackId);
+        
+        const response = await fetch(`/api/update-playlist/${playlistId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            trackIds: trackIds
+          })
+        });
+        
+        const data = await response.json();
+        
+        updatePlaylistBtn.disabled = false;
+        updatePlaylistBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Update Playlist';
+        
+        if (data.success) {
+          const selectedPlaylist = userPlaylists.find(p => p.id === playlistId);
+          createResult.innerHTML = `
+            <div class="alert alert-success">
+              <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-check-circle me-2 fa-lg"></i>
+                <h5 class="mb-0">Playlist updated successfully!</h5>
+              </div>
+              <p class="mb-2">Added ${data.trackCount} new track${data.trackCount === 1 ? '' : 's'} to "${selectedPlaylist.name}"</p>
+              ${data.duplicateCount > 0 ? `<p class="mb-2">${data.duplicateCount} track${data.duplicateCount === 1 ? ' was' : 's were'} already in the playlist</p>` : ''}
+              <a href="${selectedPlaylist.url}" target="_blank" class="btn btn-spotify btn-sm">
+                <i class="fab fa-spotify"></i> Open in Spotify
+              </a>
+            </div>
+          `;
+        } else {
+          createResult.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ${data.error}</div>`;
+        }
+      } catch (error) {
+        console.error('Error updating playlist:', error);
+        createResult.innerHTML = `<div class="alert alert-danger"><i class="fas fa-exclamation-triangle me-2"></i>Error: ${error.message}</div>`;
+        updatePlaylistBtn.disabled = false;
+        updatePlaylistBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Update Playlist';
+      }
+    }
+
+    function toggleSyncMode() {
+      if (scheduleModeRadio.checked) {
+        scheduleControls.style.display = 'block';
+        realtimeControls.style.display = 'none';
+      } else if (realtimeModeRadio.checked) {
+        scheduleControls.style.display = 'none';
+        realtimeControls.style.display = 'block';
+      }
+    }
+
+    async function checkRealtimeStatus(playlistId, conversationId) {
+      try {
+        const response = await fetch(`/api/realtime/${playlistId}/${conversationId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          if (data.isActive) {
+            startRealtimeBtn.style.display = 'none';
+            stopRealtimeBtn.style.display = 'inline-block';
+            realtimeStatus.innerHTML = `<div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              Real-time mirroring is active
+              ${data.lastMessageTimestamp ? `<br>Last check: ${new Date(data.lastMessageTimestamp).toLocaleString()}` : ''}
+            </div>`;
+          } else {
+            startRealtimeBtn.style.display = 'inline-block';
+            stopRealtimeBtn.style.display = 'none';
+            realtimeStatus.innerHTML = '';
+          }
+        }
+      } catch (error) {
+        console.error('Error checking realtime status:', error);
+        realtimeStatus.innerHTML = `<div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Error checking status: ${error.message}
+        </div>`;
+      }
+    }
+
+    async function startRealTimeSync() {
+      const playlistId = existingPlaylistsSelect.value;
+      
+      if (!playlistId || !selectedConversationId) {
+        realtimeStatus.innerHTML = `<div class="alert alert-warning">
+          <i class="fas fa-exclamation-circle me-2"></i>
+          Please select a playlist first
+        </div>`;
+        return;
+      }
+      
+      try {
+        startRealtimeBtn.disabled = true;
+        startRealtimeBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Starting...';
+        
+        const response = await fetch(`/api/realtime/${playlistId}/${selectedConversationId}`, {
+          method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        startRealtimeBtn.disabled = false;
+        startRealtimeBtn.innerHTML = '<i class="fas fa-play"></i> Start Real-time Mirroring';
+        
+        if (data.success) {
+          startRealtimeBtn.style.display = 'none';
+          stopRealtimeBtn.style.display = 'inline-block';
+          realtimeStatus.innerHTML = `<div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            ${data.message}
+          </div>`;
+        } else {
+          realtimeStatus.innerHTML = `<div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Error: ${data.error}
+          </div>`;
+        }
+      } catch (error) {
+        console.error('Error starting real-time sync:', error);
+        realtimeStatus.innerHTML = `<div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Error: ${error.message}
+        </div>`;
+        startRealtimeBtn.disabled = false;
+        startRealtimeBtn.innerHTML = '<i class="fas fa-play"></i> Start Real-time Mirroring';
+      }
+    }
+
+    async function stopRealTimeSync() {
+      const playlistId = existingPlaylistsSelect.value;
+      
+      if (!playlistId || !selectedConversationId) {
+        return;
+      }
+      
+      try {
+        stopRealtimeBtn.disabled = true;
+        stopRealtimeBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Stopping...';
+        
+        const response = await fetch(`/api/realtime/${playlistId}/${selectedConversationId}`, {
+          method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        stopRealtimeBtn.disabled = false;
+        stopRealtimeBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Mirroring';
+        
+        if (data.success) {
+          stopRealtimeBtn.style.display = 'none';
+          startRealtimeBtn.style.display = 'inline-block';
+          realtimeStatus.innerHTML = `<div class="alert alert-success">
+            <i class="fas fa-check-circle me-2"></i>
+            ${data.message}
+          </div>`;
+        } else {
+          realtimeStatus.innerHTML = `<div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Error: ${data.error}
+          </div>`;
+        }
+      } catch (error) {
+        console.error('Error stopping real-time sync:', error);
+        realtimeStatus.innerHTML = `<div class="alert alert-danger">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          Error: ${error.message}
+        </div>`;
+        stopRealtimeBtn.disabled = false;
+        stopRealtimeBtn.innerHTML = '<i class="fas fa-stop"></i> Stop Mirroring';
+      }
+    }
+  </script>
+</body>
+</html> 

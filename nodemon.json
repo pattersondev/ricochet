@@ -1,0 +1,12 @@
+{
+  "watch": ["src"],
+  "ext": "js,json,html,css",
+  "ignore": ["node_modules", "src/public/generated"],
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "verbose": true,
+  "colours": true,
+  "restartable": "rs",
+  "delay": 1000
+} 
